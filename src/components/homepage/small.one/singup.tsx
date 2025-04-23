@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { NavLink } from "react-router-dom";
 const close = (
   <svg
     width="24"
@@ -113,7 +114,6 @@ const SingupSmall = ({ onClose }: { onClose: () => void }) => {
           <h2>Email Address</h2>
           <input type="text" placeholder="Email" />
         </InputWrapper>
-
         <InputWrapper>
           <PasswordTop>
             <h2>Password</h2>
@@ -129,38 +129,10 @@ const SingupSmall = ({ onClose }: { onClose: () => void }) => {
             </ToggleIcon>
           </PasswordField>
         </InputWrapper>
-
-        <button>
-          Sign in{" "}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="21"
-            height="20"
-            viewBox="0 0 21 20"
-            fill="none"
-          >
-            <path
-              d="M3.625 10H17.375"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M11.75 4.375L17.375 10L11.75 15.625"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
-        <h4>
-          <Div></Div>Don’t have account <Div></Div>
-        </h4>
-        <Singupstyle>
+        <NavLink style={{ textDecoration: "none" }} to={"/login"}>
+          {" "}
           <button>
-            Sign up{" "}
+            Sign in{" "}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="21"
@@ -184,6 +156,39 @@ const SingupSmall = ({ onClose }: { onClose: () => void }) => {
               />
             </svg>
           </button>
+        </NavLink>
+        <h4>
+          <Div></Div>Don’t have account <Div></Div>
+        </h4>
+        <Singupstyle>
+          <NavLink style={{ textDecoration: "none" }} to={"/login"}>
+            {" "}
+            <button>
+              Sign up{" "}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="21"
+                height="20"
+                viewBox="0 0 21 20"
+                fill="none"
+              >
+                <path
+                  d="M3.625 10H17.375"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M11.75 4.375L17.375 10L11.75 15.625"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>{" "}
+          </NavLink>
         </Singupstyle>
       </MAinDiv>
     </Container>

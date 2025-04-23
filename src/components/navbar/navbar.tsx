@@ -73,14 +73,17 @@ const Navbarcomponent = () => {
         </RightDiv>
       </ManiDiv>
       <BottomDiv>
-        <div>
-          <img
-            src={Logo}
-            style={{ width: 48, height: 48, marginRight: 10 }}
-            alt=""
-          />
-          <h3>CLICON</h3>
-        </div>
+        <Link style={{ textDecoration: "none" }} to="/">
+          {" "}
+          <div>
+            <img
+              src={Logo}
+              style={{ width: 48, height: 48, marginRight: 10 }}
+              alt=""
+            />
+            <h3>CLICON</h3>
+          </div>
+        </Link>
         <div>
           {" "}
           <input type="text" placeholder="search ...." />
@@ -146,32 +149,53 @@ const Navbarcomponent = () => {
             )}
           </div>
           <div>
-            <img src={Track} alt="" />
-            <h3>Track Order</h3>
+            {" "}
+            <NavLink
+              to="/trackorder"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
+              <img src={Track} alt="" />
+              <h3>Track Order</h3>
+            </NavLink>
           </div>
           <div>
-            <img src={Customer} alt="" />
-            <h3>Customer Support</h3>
+            {" "}
+            <NavLink
+              to="/customersupport"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
+              <img src={Customer} alt="" />
+              <h3>Customer Support</h3>{" "}
+            </NavLink>
           </div>
 
           <div>
-            <Link
-              style={{
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: 5,
-              }}
+            <NavLink
               to="/compare"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
             >
               <img src={Compare} alt="" />
               <h3>Compare</h3>
-            </Link>
+            </NavLink>
           </div>
 
           <div>
-            <img src={Help} alt="" />
-            <h3>Need Help</h3>
+            {" "}
+            <NavLink
+              to="/needhelp"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
+              <img src={Help} alt="" />
+              <h3>Need Help</h3>{" "}
+            </NavLink>
           </div>
         </div>
         <div className="Rightone">

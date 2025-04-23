@@ -8,6 +8,10 @@ import SmartPhones from "./components/product/smartphone/SmartPhones";
 import WishlistData from "./components/smallpage/wishlist";
 import Cartcomponet from "./components/shopping/cart";
 import { ComparePage } from "./components/compare/computer.compare";
+import Ordertrack from "./components/trackoreder/ordertrack";
+import Orderdetail from "./components/trackoreder/order.detail";
+import OrderTracker from "./components/trackoreder/order.detail";
+import AuthPage from "./components/auth/login/singup";
 const Router = () => {
   return (
     <>
@@ -31,6 +35,9 @@ const Router = () => {
         <Route path="/wishlist" element={<WishlistData />} />
         <Route path="/shoppingcart" element={<Cartcomponet />} />
         <Route path="/compare" element={<ComparePage />} />
+        <Route path="/trackorder" element={<Ordertrack />} />
+        <Route path="track-detail" element={<OrderTracker />} />
+        <Route path="/login" element={<AuthPage />} />
       </Routes>
       <Footer />
     </>

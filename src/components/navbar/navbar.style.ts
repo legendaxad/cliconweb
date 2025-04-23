@@ -56,6 +56,7 @@ export const BottomDiv = styled.div`
       font-style: normal;
       font-weight: 700;
       line-height: 40px; /* 125% */
+      margin-bottom: 0px;
       letter-spacing: -0.64px;
     }
     display: flex;
@@ -109,8 +110,6 @@ export const Navigation = styled.div`
   align-items: center;
   gap: 200px;
   .Leftone {
-    width: 696px;
-
     padding: 10px 16px;
     display: flex;
     gap: 24px;
@@ -119,37 +118,53 @@ export const Navigation = styled.div`
       border-radius: 2px;
       background: var(--Gray-50, #f2f4f5);
       padding: 12px 24px;
+      cursor: pointer;
+
       svg {
         width: 16px;
         height: 16px;
       }
     }
     div {
-      gap: 10px;
       display: flex;
+    }
 
+    div,
+    .nav-link {
+      display: flex;
       align-items: center;
       justify-content: start;
+      gap: 10px;
+      text-decoration: none;
+
+      h3 {
+        color: var(--Gray-600, #5f6c72);
+        margin-bottom: 0;
+        font-family: "Public Sans";
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+
+      &.active h3 {
+        color: var(--Primary-500, #fa8232);
+
+        font-weight: 600;
+      }
+
+      &.active img {
+        filter: brightness(0) saturate(100%) invert(62%) sepia(75%)
+          saturate(541%) hue-rotate(343deg) brightness(99%) contrast(101%);
+      }
     }
+
     h2 {
       color: var(--Gray-900, #191c1f);
-      margin-bottom: 0px;
-      /* Body/Small/500 */
       font-family: "Public Sans";
       font-size: 14px;
-      font-style: normal;
       font-weight: 500;
-      line-height: 20px; /* 142.857% */
-    }
-    h3 {
-      color: var(--Gray-600, #5f6c72);
-      margin-bottom: 0px;
-      /* Body/Small/400 */
-      font-family: "Public Sans";
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 20px; /* 142.857% */
+      line-height: 20px;
+      margin-bottom: 0;
     }
   }
   .Rightone {

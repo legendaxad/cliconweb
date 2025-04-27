@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Homepage from "./components/homepage/main/homepage";
 import Navbarcomponent from "./components/navbar/navbar";
 import Footer from "./components/footer/footer";
@@ -12,34 +12,42 @@ import Ordertrack from "./components/trackoreder/ordertrack";
 import Orderdetail from "./components/trackoreder/order.detail";
 import OrderTracker from "./components/trackoreder/order.detail";
 import AuthPage from "./components/auth/login/singup";
+import { FAQcomponent } from "./components/small/faqs";
+import NotFoundPage from "./components/small/notfound";
+import MainLayout from "./components/utils/router2";
+import Aboutcomponent from "./components/about/about";
 const Router = () => {
   return (
     <>
-      <Navbarcomponent />
       <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/computer-and-laptop" element={<Computer />} />
-        <Route
-          path="/computer-and-laptop/product/:id"
-          element={<Detailcomputer />}
-        />
-        <Route path="/shop/smart-phones" element={<SmartPhones />} />
-        <Route path="/shop/headphone" element={<Computer />} />
-        <Route path="/shop/mobile-accessories" element={<Computer />} />
-        <Route path="/shop/gaming-console" element={<Computer />} />
-        <Route path="/shop/camera-and-photo" element={<Computer />} />
-        <Route path="/shop/tv-and-home-appliances" element={<Computer />} />
-        <Route path="/shop/watch-and-accessories" element={<Computer />} />
-        <Route path="/shop/gps-and-navigation" element={<Computer />} />
-        <Route path="/shop/wearable-technology" element={<Computer />} />
-        <Route path="/wishlist" element={<WishlistData />} />
-        <Route path="/shoppingcart" element={<Cartcomponet />} />
-        <Route path="/compare" element={<ComparePage />} />
-        <Route path="/trackorder" element={<Ordertrack />} />
-        <Route path="track-detail" element={<OrderTracker />} />
-        <Route path="/login" element={<AuthPage />} />
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Homepage />} /> {/* / */}
+          <Route path="/computer-and-laptop" element={<Computer />} />
+          <Route
+            path="/computer-and-laptop/product/:id"
+            element={<Detailcomputer />}
+          />
+          <Route path="/shop/smart-phones" element={<SmartPhones />} />
+          <Route path="/shop/headphone" element={<Computer />} />
+          <Route path="/shop/mobile-accessories" element={<Computer />} />
+          <Route path="/shop/gaming-console" element={<Computer />} />
+          <Route path="/shop/camera-and-photo" element={<Computer />} />
+          <Route path="/shop/tv-and-home-appliances" element={<Computer />} />
+          <Route path="/shop/watch-and-accessories" element={<Computer />} />
+          <Route path="/shop/gps-and-navigation" element={<Computer />} />
+          <Route path="/shop/wearable-technology" element={<Computer />} />
+          <Route path="/wishlist" element={<WishlistData />} />
+          <Route path="/shoppingcart" element={<Cartcomponet />} />
+          <Route path="/compare" element={<ComparePage />} />
+          <Route path="/trackorder" element={<Ordertrack />} />
+          <Route path="track-detail" element={<OrderTracker />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/needhelp" element={<FAQcomponent />} />
+          <Route path="/about" element={<Aboutcomponent />} />
+        </Route>
+
+        <Route path="/*" element={<NotFoundPage />} />
       </Routes>
-      <Footer />
     </>
   );
 };

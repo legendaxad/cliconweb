@@ -131,7 +131,7 @@ const SingupSmall = ({ onClose }: { onClose: () => void }) => {
         </InputWrapper>
         <NavLink style={{ textDecoration: "none" }} to={"/login"}>
           {" "}
-          <button>
+          <button onClick={onClose}>
             Sign in{" "}
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -9,6 +9,7 @@ export const MainDiv = styled.div`
   div {
     .Circle {
       h2 {
+      
         color: var(--Gray-00, #fff);
         font-family: "Public Sans";
         font-size: 22px;

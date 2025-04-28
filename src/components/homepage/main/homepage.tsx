@@ -198,7 +198,7 @@ const Homepage = () => {
               >
                 <img
                   src={Phone}
-                  alt="Top Left Image"
+                  alt="Top Left "
                   style={{
                     position: "absolute",
                     top: 0,

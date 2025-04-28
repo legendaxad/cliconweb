@@ -2,6 +2,7 @@ import { FirstDiv, LastDiv, MiddleDiv, THirdDiv, Wrapper } from "./footerstyle";
 import Icon from "../../assets/homepage/Icon (1).svg";
 import Play from "../../assets/homepage/Icon=google-play 1.svg";
 import Apple from "../../assets/homepage/Apple---Negative 1.svg";
+import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <Wrapper>
@@ -76,18 +77,18 @@ const Footer = () => {
         <p>
           <div></div>Shoping Cart
         </p>
-        <p>
+        <Link style={{textDecoration:'none'}} to={'/wishlist'}>   <p>
           <div></div>Wishlist
-        </p>
-        <p>
+        </p></Link>
+        <Link style={{textDecoration:'none'}} to={'/compare'}> <p>
           <div></div>Compare
-        </p>
-        <p>
+        </p></Link>
+        <Link style={{textDecoration:'none'}} to={'/customersupport'}>  <p>
           <div></div>Customer Help
-        </p>
-        <p>
+        </p></Link>
+      <Link style={{textDecoration:'none'}} to={'/about'}>  <p>
           <div></div>About Us
-        </p>
+        </p></Link>
       </MiddleDiv>
       <THirdDiv>
         {" "}

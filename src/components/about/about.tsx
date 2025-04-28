@@ -6,6 +6,12 @@ import {
   Middleone,
   Rightone,
 } from "./about.style";
+import Amazon from "../../assets/homepage/amaron.svg";
+import Google from "../../assets/homepage/google-2015 1.svg";
+import Toshiba from "../../assets/homepage/toshiba-1 1.svg";
+import Phillips from "../../assets/homepage/philips 1.svg";
+import Samsungimg from "../../assets/homepage/samsung-4 1.svg";
+
 import { Navigated } from "../compare/compare.style";
 import Home from "../../assets/shop/House.svg";
 import About1 from "../../assets/about/about1.png";
@@ -18,6 +24,8 @@ import Img6 from "../../assets/about/Image (24).png";
 import Img7 from "../../assets/about/Image (25).png";
 import Img8 from "../../assets/about/Image (26).png";
 import Icon from "../../assets/about/Checks.svg";
+import { All, Button, LastDiv } from "../homepage/main/homapage.style";
+import ProductGrid from "../homepage/small.one/productdetail";
 const Aboutcomponent = () => {
   return (
     <div>
@@ -144,7 +152,13 @@ const Aboutcomponent = () => {
             </h3>
           </div>
         </ImageDiv>
-        {/* <LastDiv>
+      
+      </Middleone> 
+      
+      <All>
+        <ProductGrid />
+      </All>
+       <LastDiv>
         <h6>Subscribe to our newsletter</h6>
         <p>
           Praesent fringilla erat a lacinia egestas. Donec vehicula tempor
@@ -186,8 +200,7 @@ const Aboutcomponent = () => {
           <img src={Toshiba} alt="" />
           <img src={Samsungimg} alt="" />
         </b>
-      </LastDiv> */}
-      </Middleone>
+      </LastDiv>
     </div>
   );
 };

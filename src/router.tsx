@@ -1,7 +1,5 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route,  } from "react-router-dom";
 import Homepage from "./components/homepage/main/homepage";
-import Navbarcomponent from "./components/navbar/navbar";
-import Footer from "./components/footer/footer";
 import Computer from "./components/product/computer/computer";
 import Detailcomputer from "./components/product/computer/detail.computer";
 import SmartPhones from "./components/product/smartphone/SmartPhones";
@@ -9,13 +7,13 @@ import WishlistData from "./components/smallpage/wishlist";
 import Cartcomponet from "./components/shopping/cart";
 import { ComparePage } from "./components/compare/computer.compare";
 import Ordertrack from "./components/trackoreder/ordertrack";
-import Orderdetail from "./components/trackoreder/order.detail";
 import OrderTracker from "./components/trackoreder/order.detail";
 import AuthPage from "./components/auth/login/singup";
 import { FAQcomponent } from "./components/small/faqs";
 import NotFoundPage from "./components/small/notfound";
 import MainLayout from "./components/utils/router2";
 import Aboutcomponent from "./components/about/about";
+import Custumercomponent from "./components/support/custumer";
 const Router = () => {
   return (
     <>
@@ -44,6 +42,7 @@ const Router = () => {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/needhelp" element={<FAQcomponent />} />
           <Route path="/about" element={<Aboutcomponent />} />
+          <Route path="/customersupport" element={<Custumercomponent />} />
         </Route>
 
         <Route path="/*" element={<NotFoundPage />} />

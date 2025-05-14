@@ -39,31 +39,29 @@ import { DataType } from "../../type/type";
 import { OrbitProgress } from "react-loading-indicators";
 import { useCart } from "../../context/cart";
 import { useWish } from "../../context/wishlist";
-import { smartphonesData } from "../../mock/smartPhone";
+import { HeadphonesData } from "../../mock/headphones";
 
 const priceRanges = [
   { label: "All Prices", value: "All" },
-  { label: "$0 – $300", value: "0-300" },
-  { label: "$301 – $600", value: "301-600" },
-  { label: "$601 – $900", value: "601-900" },
-  { label: "$901 – $1200", value: "901-1200" },
-  { label: "$1201 – $1800", value: "1201-1800" },
+  { label: "$0 – $200", value: "0-200" },
+  { label: "$201 – $400", value: "201-400" },
+  { label: "$401 – $600", value: "401-600" },
+  { label: "$601 – $800", value: "601-800" },
 ];
 const brands = [
-  "Apple",
-  "Samsung",
-  "Google",
-  "OnePlus",
-  "Xiaomi",
   "Sony",
-  "Asus",
-  "Nothing",
-  "Realme",
-  "Vivo",
-  "Oppo",
-  "Motorola",
-  "Huawei",
-  "Honor",
+  "Bose",
+  "Apple",
+  "Sennheiser",
+  "Jabra",
+  "Bang & Olufsen",
+  "Anker",
+  "Beats",
+  "Skullcandy",
+  "Shure",
+  "Master & Dynamic",
+  "JBL",
+  "AKG",
 ];
 const categories = [
   ["Game", "TV", "iPhone", "Laptops"],
@@ -79,7 +77,7 @@ const sortOptions = [
   { label: "Name: A to Z", value: "nameAZ" },
   { label: "Name: Z to A", value: "nameZA" },
 ];
-const SmartPhonecomponent = () => {
+const HeadPhonecomponent = () => {
   const { addToCart, isInCartlist, removeFromCart } = useCart();
   // const categoryName = "Smart Phones";
   // const products = smartphonesData;
@@ -88,7 +86,7 @@ const SmartPhonecomponent = () => {
   const [activeCategory, setActiveCategory] = useState<string>("");
 
   const [sortOption, setSortOption] = useState("default");
-  const [sortedData, setSortedData] = useState(smartphonesData);
+  const [sortedData, setSortedData] = useState(HeadphonesData);
   const [searchTerm, setSearchTerm] = useState("");
   //brand
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -139,7 +137,7 @@ const SmartPhonecomponent = () => {
   //id detail
   const navigate = useNavigate();
   const handleClick = (id: string) => {
-    navigate(`/smart-phones/product/${id}`);
+    navigate(`/headphone/product/${id}`);
   };
   const getSeverity = (item: DataType) => {
     if (item.inventoryStatus === "") {
@@ -176,35 +174,8 @@ const SmartPhonecomponent = () => {
     );
   };
 
-  const handlePriceRadioChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = event.target.value;
-    setPriceRadioValue(value);
-
-    switch (value) {
-      case "0-300":
-        setPriceRange([0, 300]);
-        break;
-      case "301-600":
-        setPriceRange([301, 600]);
-        break;
-      case "601-900":
-        setPriceRange([601, 900]);
-        break;
-      case "901-1200":
-        setPriceRange([901, 1200]);
-        break;
-      case "1201-1800":
-        setPriceRange([1201, 1800]);
-        break;
-      case "All":
-      default:
-        setPriceRange([0, 1800]);
-    }
-  };
   useEffect(() => {
-    let filtered = smartphonesData;
+    let filtered = HeadphonesData;
 
     // Search Filter
     if (searchTerm) {
@@ -311,16 +282,13 @@ const SmartPhonecomponent = () => {
                 onChange={handleSliderChange}
                 valueLabelDisplay="auto"
                 sx={{ color: "#FA8232", marginLeft: "14px" }}
-                min={110}
-                max={1800}
+                min={10}
+                max={1000}
                 step={5}
               />
             </Box>
 
-            <RadioGroup
-              value={priceRadioValue}
-              onChange={handlePriceRadioChange}
-            >
+            <RadioGroup value={priceRadioValue}>
               {priceRanges.map((range) => (
                 <FormControlLabel
                   key={range.value}
@@ -554,4 +522,4 @@ const SmartPhonecomponent = () => {
   );
 };
 
-export default SmartPhonecomponent;
+export default HeadPhonecomponent;

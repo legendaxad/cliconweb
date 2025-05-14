@@ -39,32 +39,34 @@ import { DataType } from "../../type/type";
 import { OrbitProgress } from "react-loading-indicators";
 import { useCart } from "../../context/cart";
 import { useWish } from "../../context/wishlist";
-import { smartphonesData } from "../../mock/smartPhone";
+import { AccessoriesData } from "../../mock/accessery";
+import { MobileAccessoriesData } from "../../mock/mobiledata";
 
+const brands = [
+  "Anker",
+  "UGREEN",
+  "Aukey",
+  "Belkin",
+  "Baseus",
+  "Spigen",
+  "Samsung",
+  "Apple",
+  "Logitech",
+  "Sony",
+  "JBL",
+  "Xiaomi",
+  "ZMI",
+  "HyperX",
+  "ESR",
+];
 const priceRanges = [
   { label: "All Prices", value: "All" },
-  { label: "$0 – $300", value: "0-300" },
-  { label: "$301 – $600", value: "301-600" },
-  { label: "$601 – $900", value: "601-900" },
-  { label: "$901 – $1200", value: "901-1200" },
-  { label: "$1201 – $1800", value: "1201-1800" },
+  { label: "$10 – $20", value: "10-20" },
+  { label: "$21 – $30", value: "21-30" },
+  { label: "$31 – $40", value: "31-40" },
+  { label: "$41 – $50", value: "41-50" },
 ];
-const brands = [
-  "Apple",
-  "Samsung",
-  "Google",
-  "OnePlus",
-  "Xiaomi",
-  "Sony",
-  "Asus",
-  "Nothing",
-  "Realme",
-  "Vivo",
-  "Oppo",
-  "Motorola",
-  "Huawei",
-  "Honor",
-];
+
 const categories = [
   ["Game", "TV", "iPhone", "Laptops"],
   ["Macbook", "SSD", "Graphics Card"],
@@ -79,7 +81,7 @@ const sortOptions = [
   { label: "Name: A to Z", value: "nameAZ" },
   { label: "Name: Z to A", value: "nameZA" },
 ];
-const SmartPhonecomponent = () => {
+const Accessoriescompoent = () => {
   const { addToCart, isInCartlist, removeFromCart } = useCart();
   // const categoryName = "Smart Phones";
   // const products = smartphonesData;
@@ -88,7 +90,7 @@ const SmartPhonecomponent = () => {
   const [activeCategory, setActiveCategory] = useState<string>("");
 
   const [sortOption, setSortOption] = useState("default");
-  const [sortedData, setSortedData] = useState(smartphonesData);
+  const [sortedData, setSortedData] = useState(MobileAccessoriesData);
   const [searchTerm, setSearchTerm] = useState("");
   //brand
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -139,7 +141,7 @@ const SmartPhonecomponent = () => {
   //id detail
   const navigate = useNavigate();
   const handleClick = (id: string) => {
-    navigate(`/smart-phones/product/${id}`);
+    navigate(`/mobile-accessories/product/${id}`);
   };
   const getSeverity = (item: DataType) => {
     if (item.inventoryStatus === "") {
@@ -160,8 +162,23 @@ const SmartPhonecomponent = () => {
   };
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
-    setPriceRange(newValue as number[]);
-    setPriceRadioValue("All");
+    const newPriceRange = newValue as number[];
+    setPriceRange(newPriceRange);
+
+    // Set the appropriate radio button value based on the selected price range
+    const [minPrice, maxPrice] = newPriceRange;
+
+    if (minPrice <= 30) {
+      setPriceRadioValue("0-30");
+    } else if (minPrice <= 60) {
+      setPriceRadioValue("31-60");
+    } else if (minPrice <= 100) {
+      setPriceRadioValue("61-100");
+    } else if (minPrice <= 150) {
+      setPriceRadioValue("101-150");
+    } else {
+      setPriceRadioValue("151-200");
+    }
   };
   //pages
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -183,28 +200,26 @@ const SmartPhonecomponent = () => {
     setPriceRadioValue(value);
 
     switch (value) {
-      case "0-300":
-        setPriceRange([0, 300]);
+      case "10-20":
+        setPriceRange([10, 20]);
         break;
-      case "301-600":
-        setPriceRange([301, 600]);
+      case "21-30":
+        setPriceRange([21, 30]);
         break;
-      case "601-900":
-        setPriceRange([601, 900]);
+      case "31-40":
+        setPriceRange([31, 40]);
         break;
-      case "901-1200":
-        setPriceRange([901, 1200]);
-        break;
-      case "1201-1800":
-        setPriceRange([1201, 1800]);
+      case "41-50":
+        setPriceRange([41, 50]);
         break;
       case "All":
       default:
-        setPriceRange([0, 1800]);
+        setPriceRange([10, 50]);
     }
   };
+
   useEffect(() => {
-    let filtered = smartphonesData;
+    let filtered = MobileAccessoriesData;
 
     // Search Filter
     if (searchTerm) {
@@ -231,6 +246,7 @@ const SmartPhonecomponent = () => {
         (item) => item.price >= minPrice && item.price <= maxPrice
       );
     } else {
+      // If "All" is selected, use the slider range (priceRange)
       filtered = filtered.filter(
         (item) => item.price >= priceRange[0] && item.price <= priceRange[1]
       );
@@ -311,8 +327,8 @@ const SmartPhonecomponent = () => {
                 onChange={handleSliderChange}
                 valueLabelDisplay="auto"
                 sx={{ color: "#FA8232", marginLeft: "14px" }}
-                min={110}
-                max={1800}
+                min={0}
+                max={200}
                 step={5}
               />
             </Box>
@@ -554,4 +570,4 @@ const SmartPhonecomponent = () => {
   );
 };
 
-export default SmartPhonecomponent;
+export default Accessoriescompoent;

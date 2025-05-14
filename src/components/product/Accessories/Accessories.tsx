@@ -39,31 +39,26 @@ import { DataType } from "../../type/type";
 import { OrbitProgress } from "react-loading-indicators";
 import { useCart } from "../../context/cart";
 import { useWish } from "../../context/wishlist";
-import { smartphonesData } from "../../mock/smartPhone";
+import { AccessoriesData } from "../../mock/accessery";
 
+const brands = [
+  "Redragon",
+  "Logitech",
+  "JBL",
+  "UGREEN",
+  "Dell",
+  "HP",
+  "Cooler Master",
+  "Aukey",
+  "ASUS",
+  "Sabrent",
+];
 const priceRanges = [
   { label: "All Prices", value: "All" },
-  { label: "$0 – $300", value: "0-300" },
-  { label: "$301 – $600", value: "301-600" },
-  { label: "$601 – $900", value: "601-900" },
-  { label: "$901 – $1200", value: "901-1200" },
-  { label: "$1201 – $1800", value: "1201-1800" },
-];
-const brands = [
-  "Apple",
-  "Samsung",
-  "Google",
-  "OnePlus",
-  "Xiaomi",
-  "Sony",
-  "Asus",
-  "Nothing",
-  "Realme",
-  "Vivo",
-  "Oppo",
-  "Motorola",
-  "Huawei",
-  "Honor",
+  { label: "$0 – $50", value: "0-50" },
+  { label: "$51 – $100", value: "51-100" },
+  { label: "$101 – $150", value: "101-150" },
+  { label: "$151 – $200", value: "151-200" },
 ];
 const categories = [
   ["Game", "TV", "iPhone", "Laptops"],
@@ -79,7 +74,7 @@ const sortOptions = [
   { label: "Name: A to Z", value: "nameAZ" },
   { label: "Name: Z to A", value: "nameZA" },
 ];
-const SmartPhonecomponent = () => {
+const Accessoriescompoent = () => {
   const { addToCart, isInCartlist, removeFromCart } = useCart();
   // const categoryName = "Smart Phones";
   // const products = smartphonesData;
@@ -88,7 +83,7 @@ const SmartPhonecomponent = () => {
   const [activeCategory, setActiveCategory] = useState<string>("");
 
   const [sortOption, setSortOption] = useState("default");
-  const [sortedData, setSortedData] = useState(smartphonesData);
+  const [sortedData, setSortedData] = useState(AccessoriesData);
   const [searchTerm, setSearchTerm] = useState("");
   //brand
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -139,7 +134,7 @@ const SmartPhonecomponent = () => {
   //id detail
   const navigate = useNavigate();
   const handleClick = (id: string) => {
-    navigate(`/smart-phones/product/${id}`);
+    navigate(`/computer-accessories/product/${id}`);
   };
   const getSeverity = (item: DataType) => {
     if (item.inventoryStatus === "") {
@@ -183,28 +178,28 @@ const SmartPhonecomponent = () => {
     setPriceRadioValue(value);
 
     switch (value) {
-      case "0-300":
-        setPriceRange([0, 300]);
+      case "1000":
+        setPriceRange([1000, 1300]);
         break;
-      case "301-600":
-        setPriceRange([301, 600]);
+      case "1300":
+        setPriceRange([1301, 1600]);
         break;
-      case "601-900":
-        setPriceRange([601, 900]);
+      case "1600":
+        setPriceRange([1601, 2000]);
         break;
-      case "901-1200":
-        setPriceRange([901, 1200]);
+      case "2000":
+        setPriceRange([2001, 2500]);
         break;
-      case "1201-1800":
-        setPriceRange([1201, 1800]);
+      case "2500":
+        setPriceRange([2501, 3000]);
         break;
       case "All":
       default:
-        setPriceRange([0, 1800]);
+        setPriceRange([1000, 3000]);
     }
   };
   useEffect(() => {
-    let filtered = smartphonesData;
+    let filtered = AccessoriesData;
 
     // Search Filter
     if (searchTerm) {
@@ -231,6 +226,7 @@ const SmartPhonecomponent = () => {
         (item) => item.price >= minPrice && item.price <= maxPrice
       );
     } else {
+      // If "All" is selected, use the slider range (priceRange)
       filtered = filtered.filter(
         (item) => item.price >= priceRange[0] && item.price <= priceRange[1]
       );
@@ -311,9 +307,9 @@ const SmartPhonecomponent = () => {
                 onChange={handleSliderChange}
                 valueLabelDisplay="auto"
                 sx={{ color: "#FA8232", marginLeft: "14px" }}
-                min={110}
-                max={1800}
-                step={5}
+                min={5}
+                max={200}
+                step={10}
               />
             </Box>
 
@@ -554,4 +550,4 @@ const SmartPhonecomponent = () => {
   );
 };
 
-export default SmartPhonecomponent;
+export default Accessoriescompoent;

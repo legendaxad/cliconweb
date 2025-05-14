@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 const close = (
   <svg
     width="24"
@@ -72,7 +74,34 @@ const open = (
   </svg>
 );
 const SingupSmall = ({ onClose }: { onClose: () => void }) => {
+  const [user, setUser] = useState<{ email: string; name?: string } | null>(
+    null
+  );
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post("http://localhost:8080/auth/signin", {
+        email,
+        password,
+      });
+
+      if (res.data) {
+        // Save the user info
+        setUser({
+          email: res.data.email,
+          name: res.data.name, // Adjust based on what your backend returns
+        });
+
+        toast.success("Login successful!");
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Login failed.");
+    }
+  };
 
   return (
     <Container>
@@ -82,115 +111,75 @@ const SingupSmall = ({ onClose }: { onClose: () => void }) => {
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div>
-          {" "}
-          <h1>Sign in to your account</h1>
-          <h1 onClick={onClose}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
+        {user ? (
+          <>
+            <div>
+              <h1>Welcome, {user.name || user.email}</h1>
+              <h1 onClick={onClose}>✕</h1>
+            </div>
+            <button
+              onClick={() => {
+                setUser(null);
+                setEmail("");
+                setPassword("");
+              }}
             >
-              <path
-                d="M12.5 3.5L3.5 12.5"
-                stroke="#929FA5"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+              Log out
+            </button>
+          </>
+        ) : (
+          <>
+            <div>
+              <h1>Sign in to your account</h1>
+              <h1 onClick={onClose}>✕</h1>
+            </div>
+            <InputWrapper>
+              <h2>Email Address</h2>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.currentTarget.value)}
+                required
               />
-              <path
-                d="M12.5 12.5L3.5 3.5"
-                stroke="#929FA5"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </h1>
-        </div>
-        <InputWrapper>
-          <h2>Email Address</h2>
-          <input type="text" placeholder="Email" />
-        </InputWrapper>
-        <InputWrapper>
-          <PasswordTop>
-            <h2>Password</h2>
-            <h3>Forgot Password</h3>
-          </PasswordTop>
-          <PasswordField>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-            />
-            <ToggleIcon onClick={() => setShowPassword((prev) => !prev)}>
-              {showPassword ? close : open}
-            </ToggleIcon>
-          </PasswordField>
-        </InputWrapper>
-        <NavLink style={{ textDecoration: "none" }} to={"/login"}>
-          {" "}
-          <button onClick={onClose}>
-            Sign in{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="21"
-              height="20"
-              viewBox="0 0 21 20"
-              fill="none"
-            >
-              <path
-                d="M3.625 10H17.375"
-                stroke="white"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M11.75 4.375L17.375 10L11.75 15.625"
-                stroke="white"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-        </NavLink>
-        <h4>
-          <Div></Div>Don’t have account <Div></Div>
-        </h4>
-        <Singupstyle>
-          <NavLink style={{ textDecoration: "none" }} to={"/login"}>
-            {" "}
-            <button>
-              Sign up{" "}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="21"
-                height="20"
-                viewBox="0 0 21 20"
-                fill="none"
-              >
-                <path
-                  d="M3.625 10H17.375"
-                  stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+            </InputWrapper>
+            <InputWrapper>
+              <PasswordTop>
+                <h2>Password</h2>
+                <h3>Forgot Password</h3>
+              </PasswordTop>
+              <PasswordField>
+                <input
+                  value={password}
+                  onChange={(e) => setPassword(e.currentTarget.value)}
+                  required
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
                 />
-                <path
-                  d="M11.75 4.375L17.375 10L11.75 15.625"
-                  stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </button>{" "}
-          </NavLink>
-        </Singupstyle>
+                <ToggleIcon onClick={() => setShowPassword((prev) => !prev)}>
+                  {showPassword ? close : open}
+                </ToggleIcon>
+              </PasswordField>
+            </InputWrapper>
+            <button onClick={handleLogin}>
+              Sign in
+              <svg /* icon omitted for brevity */ />
+            </button>
+            <h4>
+              <Div></Div>Don’t have account <Div></Div>
+            </h4>
+            <Singupstyle>
+              <NavLink style={{ textDecoration: "none" }} to={"/login"}>
+                <button>
+                  Sign up
+                  <svg /* icon omitted for brevity */ />
+                </button>
+              </NavLink>
+            </Singupstyle>
+          </>
+        )}
       </MAinDiv>
+      <ToastContainer />
     </Container>
   );
 };
@@ -200,7 +189,7 @@ const Container = styled.div`
   top: 210px;
   left: 54vw;
   transform: translate(30px, -70px);
-  z-index: 10;
+  z-index: 99;
 `;
 const Div = styled.div`
   background: #e4e7e9;

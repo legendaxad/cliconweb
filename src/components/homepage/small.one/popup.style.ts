@@ -1,7 +1,22 @@
 import styled from "styled-components";
+import { keyframes } from "styled-components";
+
+// Define a fade-in animation
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);  // Slightly shifted up initially
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-100);  // Normal position
+  }
+`;
 export const Popup = styled.div`
   width: 200px;
   position: absolute;
+  animation: ${fadeIn} 0.3s ease-out forwards; // Apply the fade-in animation
+
   top: 200px;
   left: 50%;
   transform: translateX(-260%);
@@ -21,7 +36,7 @@ export const Popup = styled.div`
     cursor: pointer;
 
     &:hover {
-      background-color: green;
+      background-color: #fa8232;
       color: white;
     }
   }

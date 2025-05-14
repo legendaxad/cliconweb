@@ -1,8 +1,8 @@
-// context/cart.tsx
-import React, { createContext, useContext, useState } from "react";
+import axios from "axios";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-interface CartItem {
+export interface CartItem {
   id: string;
   name: string;
   image: string;
@@ -25,13 +25,61 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const USER_ID = "guest123"; // Replace with dynamic ID if user is logged in
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const addToCart = (item: CartItem) => {
+  // ✅ Load cart from backend on first load
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/cart/user?userId=${USER_ID}`
+        );
+
+        const backendItems = res.data.map((item: any) => ({
+          id: item.productId,
+          name: item.name,
+          image: item.image,
+          price: item.price,
+          quantity: item.quantity,
+          rating: 0, // Replace with actual rating if available
+        }));
+
+        setCartItems(backendItems);
+      } catch (error) {
+        console.error("Failed to fetch cart:", error);
+        toast.error("Could not load your cart");
+      }
+    };
+
+    fetchCartItems();
+  }, []);
+
+  const addToCart = async (item: CartItem) => {
     toast.success(`${item.name} added to cart!`);
+
+    // ✅ Sync with backend
+    try {
+      await axios.post("http://localhost:8080/cart/add", {
+        userId: USER_ID,
+        product: {
+          _id: item.id,
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          quantity: item.quantity,
+        },
+      });
+    } catch (error: any) {
+      console.error("❌ Failed to sync cart:", error);
+      toast.error("Could not sync with backend");
+    }
+
+    // ✅ Local cart logic
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
 
@@ -54,14 +102,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     });
   };
+
   const removeFromCart = (id: string) => {
     toast.error("Item removed from cart!");
     // ✅ This completely removes the item
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
+
   const isInCartlist = (id: string) => {
     return cartItems.some((item) => item.id === id);
   };
+
   const changeQuantity = (id: string, quantity: number) => {
     setCartItems((prev) =>
       prev.map((item) =>
@@ -71,6 +122,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       )
     );
   };
+
   return (
     <CartContext.Provider
       value={{

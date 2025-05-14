@@ -23,6 +23,7 @@ const CartSmall = ({
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+
   return (
     <Container>
       <MAinDiv

@@ -38,8 +38,9 @@ import { Tag } from "primereact/tag";
 import { DataType } from "../../type/type";
 import { OrbitProgress } from "react-loading-indicators";
 import { laptopsData } from "../../mock/laptop";
-import { useCart } from "../../context/cart";
+import { CartItem, useCart } from "../../context/cart";
 import { useWish } from "../../context/wishlist";
+import axios from "axios";
 
 const brands = [
   "Acer",
@@ -80,9 +81,11 @@ const Computer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [activeCategory, setActiveCategory] = useState<string>("");
+  const [products, setProducts] = useState<DataType[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [sortOption, setSortOption] = useState("default");
-  const [sortedData, setSortedData] = useState(laptopsData);
+  const [sortedData, setSortedData] = useState<DataType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   //brand
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -90,20 +93,23 @@ const Computer = () => {
   const [priceRange, setPriceRange] = useState<number[]>([1000, 3000]);
   const [priceRadioValue, setPriceRadioValue] = useState<string>("All");
   const handleAddToCart = (item: any) => {
-    if (isInCartlist(item.id)) {
-      removeFromCart(item.id);
+    const transformedItem = {
+      id: item._id, // ✅ ensure it's the MongoDB ObjectId
+      name: item.name,
+      image: item.image,
+      price: item.price,
+      quantity: 1,
+      color: item.color,
+      size: item.size,
+      memory: item.memory,
+      storage: item.storage,
+      rating: item.rating,
+    };
+
+    if (isInCartlist(transformedItem.id)) {
+      removeFromCart(transformedItem.id);
     } else {
-      addToCart({
-        id: item.id,
-        name: item.name,
-        image: item.image,
-        price: item.price,
-        quantity: 1,
-        color: item.color,
-        size: item.size,
-        memory: item.memory,
-        rating: item.rating,
-      });
+      addToCart(transformedItem);
     }
   };
   const { addToWish, removeFromWish, isInWishlist } = useWish();
@@ -175,7 +181,6 @@ const Computer = () => {
   ) => {
     const value = event.target.value;
     setPriceRadioValue(value);
-
     switch (value) {
       case "1000":
         setPriceRange([1000, 1300]);
@@ -192,13 +197,26 @@ const Computer = () => {
       case "2500":
         setPriceRange([2501, 3000]);
         break;
-      case "All":
       default:
         setPriceRange([1000, 3000]);
     }
   };
+
   useEffect(() => {
-    let filtered = laptopsData;
+    (async () => {
+      try {
+        const { data } = await axios.get("http://localhost:8080/laptop/all");
+        setProducts(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    let filtered = products;
 
     // Search
     if (searchTerm) {
@@ -251,8 +269,9 @@ const Computer = () => {
     }
 
     setSortedData(filtered);
-  }, [searchTerm, sortOption, selectedBrands, priceRange]);
+  }, [searchTerm, sortOption, selectedBrands, priceRange, products]);
 
+  if (loading) return <p>Loading...</p>;
   return (
     <>
       <Navigation>
@@ -295,243 +314,6 @@ const Computer = () => {
       </Navigation>
       <MainDiv>
         <LeftDiv>
-          <h2>Category</h2>
-          <CategoryName>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="female"
-              name="radio-buttons-group"
-            >
-              <h3>
-                {" "}
-                <FormControlLabel
-                  className="Axad"
-                  value="Electronics"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Electronics Devices
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Computer"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Computer & Laptop
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Accessories"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Computer Accessories
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="SmartPhone"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                SmartPhone
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Headphone"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Headphone
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Mobile"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Mobile Accessories
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Gaming"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Gaming Console
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Camera"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Camera & Photo
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Homes"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                TV & Homes Appliances
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  value="Watchs"
-                  className="Axad"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Watchs & Accessories
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  className="Axad"
-                  value="GPS"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                GPS & Navigation
-              </h3>
-              <h3>
-                {" "}
-                <FormControlLabel
-                  className="Axad"
-                  value="Warable"
-                  control={
-                    <Radio
-                      sx={{
-                        color: "grey",
-                        "&.Mui-checked": {
-                          color: "#FA8232",
-                        },
-                      }}
-                    />
-                  }
-                  label=""
-                />
-                Warable Technology
-              </h3>
-            </RadioGroup>
-          </CategoryName>
           <div className="Line"></div>
           <h2>Price Range</h2>
 

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   CountStyle,
   LASTONE,
@@ -12,10 +11,7 @@ import { Button } from "../homepage/main/homapage.style";
 
 const Cartcomponet = () => {
   const { cartItems, removeFromCart, changeQuantity } = useCart();
-  // const subtotal = cartItems.reduce(
-  //   (acc, item) => acc + item.price * item.quantity * 100, // 14% discount
-  //   0
-  // );
+
   const Discount = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity * 0.15, // 14% discount
     0

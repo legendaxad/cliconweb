@@ -207,7 +207,7 @@ const Navbarcomponent = () => {
       {isOpen && (
         <div>
           {" "}
-          <CategoryList />
+          <CategoryList isOpen={isOpen} setIsOpen={setIsOpen} />
         </div>
       )}
 

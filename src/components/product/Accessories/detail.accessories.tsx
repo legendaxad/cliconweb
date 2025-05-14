@@ -40,7 +40,7 @@ import ProductGrid from "../../homepage/small.one/productdetail";
 import { useWish } from "../../context/wishlist";
 import { useCompare } from "../../context/compare";
 import { ToastContainer } from "react-toastify";
-import { smartphonesData } from "../../mock/smartPhone";
+import { AccessoriesData } from "../../mock/accessery";
 
 const RightArrow = () => (
   <svg
@@ -60,23 +60,6 @@ const RightArrow = () => (
   </svg>
 );
 
-const memoryData = [
-  { label: "8GB DDR4 RAM", value: "8-DDR4" },
-  { label: "16GB Unified Memory", value: "16-UNIFIED" },
-  { label: "16GB DDR5 RAM", value: "16-DDR5" },
-  { label: "32GB DDR5 RAM", value: "32-DDR5" },
-  { label: "64GB DDR5 RAM", value: "64-DDR5" },
-  { label: "128GB ECC Memory", value: "128-ECC" },
-];
-const storageData = [
-  { label: "256GB SSD", value: "256-SSD" },
-  { label: "512GB SSD", value: "512-SSD" },
-  { label: "1TB SSD", value: "1024-SSD" },
-  { label: "1TB NVMe SSD", value: "1024-NVMe" },
-  { label: "2TB SSD", value: "2048-SSD" },
-  { label: "2TB PCIe 4.0 NVMe", value: "2048-PCIe4" },
-  { label: "4TB Ultra Fast SSD", value: "4096-Ultra" },
-];
 const sizeData = [
   { label: "13-inch Retina Display", value: 13 },
   { label: "14-inch Liquid Retina XDR Display", value: 14 },
@@ -86,13 +69,30 @@ const sizeData = [
   { label: "18-inch WQHD+ Display", value: 18 },
   { label: "21-inch UltraSharp 4K Display", value: 21 },
 ];
+const memoryData = [
+  { label: "8GB DDR4 RAM", value: 8 },
+  { label: "16GB Unified Memory", value: 16 },
+  { label: "16GB DDR5 RAM", value: 16 },
+  { label: "32GB DDR5 RAM", value: 32 },
+  { label: "64GB DDR5 RAM", value: 64 },
+  { label: "128GB ECC Memory", value: 128 },
+];
+const storageData = [
+  { label: "256GB SSD", value: 256 },
+  { label: "512GB SSD", value: 512 },
+  { label: "1TB SSD", value: 1024 },
+  { label: "2TB SSD", value: 2048 },
+  { label: "1TB NVMe SSD", value: 1024 },
+  { label: "2TB PCIe 4.0 NVMe", value: 2048 },
+  { label: "4TB Ultra Fast SSD", value: 4096 },
+];
 const colors = [
   { name: "Silver", code: "#C0C0C0" },
   { name: "Space Gray", code: "#a11010" },
   { name: "Midnight", code: "#000" },
 ];
 
-const DetailSmartphone: React.FC = () => {
+const Detailaccessories: React.FC = () => {
   const { addToCart } = useCart();
   const { addToCompare } = useCompare();
   const { id } = useParams<{ id: string }>();
@@ -138,7 +138,7 @@ const DetailSmartphone: React.FC = () => {
   };
 
   useEffect(() => {
-    const found = smartphonesData.find((p) => p.id === id);
+    const found = AccessoriesData.find((p) => p.id === id);
     setProduct(found || null);
   }, [id]);
   const handleAddToCart = () => {
@@ -305,7 +305,7 @@ const DetailSmartphone: React.FC = () => {
                   options={memoryData}
                   sx={{ width: 300 }}
                   onChange={(event, newValue) =>
-                    setSelectedMemory(newValue ? Number(newValue.value) : null)
+                    setSelectedMemory(newValue?.value || null)
                   }
                   renderInput={(params) => (
                     <TextField {...params} placeholder="Memory" />
@@ -319,7 +319,7 @@ const DetailSmartphone: React.FC = () => {
                   options={storageData}
                   sx={{ width: 300 }}
                   onChange={(event, newValue) =>
-                    setSelectedStorage(newValue ? Number(newValue.value) : null)
+                    setSelectedStorage(newValue?.value || null)
                   }
                   renderInput={(params) => (
                     <TextField {...params} placeholder="Storage" />
@@ -754,4 +754,4 @@ const DetailSmartphone: React.FC = () => {
   );
 };
 
-export default DetailSmartphone;
+export default Detailaccessories;

@@ -11,6 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import { slugify } from "../../utils/slug";
 
+// Right Arrow component
 const RightArrow = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -29,6 +30,7 @@ const RightArrow = () => (
   </svg>
 );
 
+// Categories list
 const categories = [
   "Computer & Laptop",
   "Computer Accessories",
@@ -43,17 +45,37 @@ const categories = [
   "Wearable Technology",
 ];
 
-const CategoryList = () => {
+// Define the prop types for CategoryList
+interface CategoryListProps {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const CategoryList: React.FC<CategoryListProps> = ({ isOpen, setIsOpen }) => {
   const [selected, setSelected] = useState<string | null>(null);
+
+  const handleCategoryClick = (category: string) => {
+    setSelected((prevSelected) =>
+      prevSelected === category ? null : category
+    );
+  };
 
   return (
     <Container>
       <Popup>
         {categories.map((category) => {
-          const slug = slugify(category);
           return (
-            <Link key={category} to={`/${slugify(category)}`}>
-              <h2 onClick={() => setSelected(category)}>
+            <Link
+              style={{ textDecoration: "none" }}
+              key={category}
+              to={`/${slugify(category)}`}
+            >
+              <h2
+                onClick={() => {
+                  handleCategoryClick(category);
+                  setIsOpen(false); // Close the dropdown when a category is clicked
+                }}
+              >
                 {category} {selected === category && <RightArrow />}
               </h2>
             </Link>
@@ -97,7 +119,7 @@ const CategoryList = () => {
                   <h4>
                     Starting price: <b>{mockData[selected][0].price}</b>
                   </h4>
-                  <Link to={`/shop/${slugify(selected)}`}>
+                  <Link to={`/${slugify(selected)}`}>
                     <button>
                       <h2>shop now</h2>
                       <svg

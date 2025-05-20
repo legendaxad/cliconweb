@@ -1,4 +1,5 @@
 import axios from "axios";
+import { a } from "framer-motion/dist/types.d-B50aGbjN";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
@@ -46,7 +47,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
           image: item.image,
           price: item.price,
           quantity: item.quantity,
-          rating: 0, // Replace with actual rating if available
+          rating: 0,
         }));
 
         setCartItems(backendItems);
@@ -62,7 +63,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const addToCart = async (item: CartItem) => {
     toast.success(`${item.name} added to cart!`);
 
-    // ✅ Sync with backend
     try {
       await axios.post("http://localhost:8080/cart/add", {
         userId: USER_ID,
@@ -79,7 +79,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       toast.error("Could not sync with backend");
     }
 
-    // ✅ Local cart logic
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
 
@@ -103,24 +102,45 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const removeFromCart = (id: string) => {
+  const removeFromCart = async (id: string) => {
     toast.error("Item removed from cart!");
-    // ✅ This completely removes the item
+
+    try {
+      await axios.delete(`http://localhost:8080/cart/remove/${USER_ID}/${id}`);
+    } catch (error) {
+      console.error("❌ Failed to delete from backend:", error);
+      toast.error("Could not remove item from backend");
+    }
+
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
-
   const isInCartlist = (id: string) => {
     return cartItems.some((item) => item.id === id);
   };
 
-  const changeQuantity = (id: string, quantity: number) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.min(Math.max(quantity, 1), 10) }
-          : item
-      )
-    );
+  const changeQuantity = async (id: string, quantity: number) => {
+    if (quantity > 10) {
+      toast.error("Item quantity cannot exceed 10.");
+      return;
+    }
+
+    if (quantity < 1) {
+      toast.error("Item quantity must be at least 1.");
+      return;
+    }
+
+    try {
+      await axios.put(`http://localhost:8080/cart/update/${USER_ID}/${id}`, {
+        quantity,
+      });
+
+      setCartItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+      );
+    } catch (error) {
+      console.error("Failed to update quantity:", error);
+      alert("Failed to update cart. Please try again.");
+    }
   };
 
   return (

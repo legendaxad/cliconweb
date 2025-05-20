@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import { useCart } from "../../context/cart";
 import { ThreeDot } from "react-loading-indicators";
 import { Link } from "react-router-dom";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+
+import { createGlobalStyle } from "styled-components";
 interface CartItem {
   id: string;
   name: string;
@@ -23,9 +27,24 @@ const CartSmall = ({
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-
+  const handleRemove = (id: string) => {
+    confirmAlert({
+      title: "Confirm Removal",
+      message: "Are you sure you want to remove this item from your cart?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => removeFromCart(id),
+        },
+        {
+          label: "No",
+        },
+      ],
+    });
+  };
   return (
     <Container>
+      <ConfirmAlertStyles />{" "}
       <MAinDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -66,7 +85,7 @@ const CartSmall = ({
                     {item.price * item.quantity}
                   </h2>
                 </div>
-                <h1 onClick={() => removeFromCart(item.id)}>
+                <h1 onClick={() => handleRemove(item.id)}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
                       d="M12.5 3.5L3.5 12.5"
@@ -307,5 +326,66 @@ const InputWrapper = styled.div`
     }
   }
 `;
+const ConfirmAlertStyles = createGlobalStyle`
+  .react-confirm-alert {
+    font-family: "Public Sans", sans-serif;
+  }
 
+  .react-confirm-alert-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1001 !important;
+  }
+
+  .react-confirm-alert-body {
+    background: #fff4e6;
+    border-radius: 12px;
+    border: 2px solid #fa8232;
+    padding: 30px;
+    text-align: center;
+  }
+
+  .react-confirm-alert-body h1 {
+    color: #191c1f;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .react-confirm-alert-body p {
+    color: #475156;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .react-confirm-alert-button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .react-confirm-alert-button-group button {
+    background: #fa8232;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+
+  .react-confirm-alert-button-group button:hover {
+    background: #e66d1e;
+  }
+
+  .react-confirm-alert-button-group button:nth-child(2) {
+    background: #f5f5f5;
+    color: #fa8232;
+    border: 1px solid #fa8232;
+  }
+
+  .react-confirm-alert-button-group button:nth-child(2):hover {
+    background: #fa8232;
+    color: white;
+  }
+`;
 export default CartSmall;

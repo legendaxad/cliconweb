@@ -1,12 +1,13 @@
-import React, { createContext, useContext, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-interface WishItem {
+export interface WishItem {
   id: string;
   name: string;
   image: string;
   price: number;
-  quantity: number;
+  quantity?: number; // ✅ Make it optional
   color?: string;
   size?: string;
   memory?: string;
@@ -17,7 +18,7 @@ interface WishItem {
   inventoryStatus: string;
 }
 
-interface CartContextType {
+interface WishlistContextType {
   wishItems: WishItem[];
   addToWish: (item: WishItem) => void;
   removeFromWish: (id: string) => void;
@@ -25,41 +26,95 @@ interface CartContextType {
   isInWishlist: (id: string) => boolean;
 }
 
-const WishContext = createContext<CartContextType | undefined>(undefined);
+const WishContext = createContext<WishlistContextType | undefined>(undefined);
+const USER_ID = "guest123";
 
 export const WishProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [wishItems, setWishItems] = useState<WishItem[]>([]);
 
-  const addToWish = (item: WishItem) => {
-    toast.success(`Item added to wishlist!`);
-
-    setWishItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.id === item.id);
-
-      if (existingItem) {
-        const updatedQuantity = existingItem.quantity + item.quantity;
-
-        return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: updatedQuantity } : i
+  // Fetch wishlist on mount
+  useEffect(() => {
+    const fetchWishlistItems = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/wishlist/user?userId=${USER_ID}`
         );
-      } else {
-        const quantityToAdd = Math.min(item.quantity, 10);
-        return [...prevItems, { ...item, quantity: quantityToAdd }];
+
+        // Ensure response is an array
+        if (Array.isArray(res.data)) {
+          const items: WishItem[] = res.data.map((item: any) => ({
+            id: item.productId,
+            name: item.name,
+            image: item.image,
+            price: item.price,
+            category: item.category || "",
+            rating: item.rating || 0,
+            description: item.description || "",
+            inventoryStatus: item.inventoryStatus || "IN_STOCK",
+            color: item.color,
+            size: item.size,
+            memory: item.memory,
+            storage: item.storage,
+          }));
+
+          setWishItems(items);
+        } else {
+          toast.error("Unexpected response format from wishlist API");
+          console.error("Unexpected wishlist API response:", res.data);
+        }
+      } catch (error) {
+        console.error("❌ Failed to fetch wishlist:", error);
+        toast.error("Could not load your wishlist");
       }
-    });
+    };
+
+    fetchWishlistItems();
+  }, []);
+
+  // Add to wishlist
+  const addToWish = async (item: WishItem) => {
+    console.log("🧪 Sending to wishlist:", item);
+    try {
+      await axios.post("http://localhost:8080/wishlist/add", {
+        userId: USER_ID,
+        product: {
+          _id: item.id,
+          name: item.name,
+          price: item.price,
+          image: item.image,
+        },
+      });
+
+      toast.success(`Item added to wishlist!`);
+
+      setWishItems((prev) => {
+        const exists = prev.some((i) => i.id === item.id);
+        return exists ? prev : [...prev, item];
+      });
+    } catch (error: any) {
+      console.error(
+        "❌ Failed to sync wishlist:",
+        error?.response?.data || error
+      );
+      toast.error("Could not sync with backend");
+    }
   };
 
-  const removeFromWish = (id: string) => {
-    toast.error("Item removed from wishlist!");
-    setWishItems((prev) =>
-      prev
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+  // Remove from wishlist
+  const removeFromWish = async (id: string) => {
+    try {
+      await axios.delete(
+        `http://localhost:8080/wishlist/remove/${USER_ID}/${id}`
+      );
+      toast.error("Item removed from wishlist!");
+
+      setWishItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("❌ Failed to delete from backend:", error);
+      toast.error("Could not remove item from backend");
+    }
   };
 
   const clearWishlist = () => {

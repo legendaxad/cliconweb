@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import Imagebac from "../../../assets/homepage/New Google Pixel 6 Pro.jpg";
-import { dividerClasses } from "@mui/material";
+
 export const MainDiv = styled.div`
   display: flex;
   align-items: center;
@@ -50,9 +49,7 @@ export const Button = styled.button`
   .arrow-icon {
     width: 20px;
     height: 20px;
-    transition:
-      transform 0.3s ease-in-out,
-      stroke-dashoffset 0.5s ease-in-out;
+    transition: transform 0.3s ease-in-out, stroke-dashoffset 0.5s ease-in-out;
     stroke-dasharray: 20;
     stroke-dashoffset: 20;
   }
@@ -272,9 +269,7 @@ export const BestDeals = styled.div`
       height: 20px;
       opacity: 0;
       transform: translateX(-5px);
-      transition:
-        opacity 0.3s ease-in-out,
-        transform 0.3s ease-in-out;
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     }
 
     &:hover .arrow-icon {
@@ -1022,9 +1017,7 @@ export const RestBlog = styled.div`
   button svg {
     width: 20px;
     height: 20px;
-    transition:
-      transform 0.3s ease-in-out,
-      stroke-dashoffset 0.5s ease-in-out;
+    transition: transform 0.3s ease-in-out, stroke-dashoffset 0.5s ease-in-out;
     stroke-dasharray: 20;
     stroke-dashoffset: 20;
   }

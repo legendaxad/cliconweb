@@ -81,12 +81,12 @@ export default function WishlistData() {
     }
   };
   return (
-    <div>
+    <div style={{ padding: "1rem" }}>
       <div
         style={{
           display: "flex",
+          alignItems: "center",
           justifyContent: "flex-end",
-          marginBottom: "1rem",
         }}
       >
         <DataViewLayoutOptions

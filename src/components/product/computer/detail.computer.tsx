@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { laptopsData } from "../../mock/laptop";
+// import { laptopsData } from "../../mock/laptop";
 import { Navigation } from "../pages.style";
 import Shop from "../../../assets/shop/House.svg";
 import { DataType } from "../../type/type";
@@ -40,7 +40,8 @@ import { useCart } from "../../context/cart";
 import ProductGrid from "../../homepage/small.one/productdetail";
 import { useWish } from "../../context/wishlist";
 import { useCompare } from "../../context/compare";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 const RightArrow = () => (
   <svg
@@ -132,14 +133,28 @@ const Detailcomputer: React.FC = () => {
   const [coun, setCoun] = useState<number>(1);
   const increament = () => {
     if (coun < 10) setCoun((prev) => prev + 1);
+    toast.success("Quantity can't be more than 10");
   };
   const decrement = () => {
     if (coun > 1) setCoun((prev) => prev - 1);
+    toast.error("Quantity can't be less than 1");
   };
-
   useEffect(() => {
-    const found = laptopsData.find((p) => p.id === id);
-    setProduct(found || null);
+    const fetchProduct = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:8080/laptop/all/${id}`
+        );
+        setProduct(data);
+      } catch (err) {
+        console.error("Error fetching product by ID:", err);
+        setProduct(null);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
   }, [id]);
   const handleAddToCart = () => {
     if (!product) return;

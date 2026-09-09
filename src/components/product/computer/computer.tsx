@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import {
   BrandsGrid,
   Buttonn,
@@ -35,11 +35,10 @@ import Checkbox from "@mui/material/Checkbox";
 import { Autocomplete, TextField } from "@mui/material";
 import StarRating from "../../homepage/small.one/starRating";
 import { Tag } from "primereact/tag";
-import { DataType } from "../../type/type";
+import { DataType2 } from "../../type/type";
 import { OrbitProgress } from "react-loading-indicators";
-import { laptopsData } from "../../mock/laptop";
-import { CartItem, useCart } from "../../context/cart";
-import { useWish } from "../../context/wishlist";
+import { useCart } from "../../context/cart";
+import { WishItem, useWish } from "../../context/wishlist";
 import axios from "axios";
 
 const brands = [
@@ -81,11 +80,11 @@ const Computer = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [activeCategory, setActiveCategory] = useState<string>("");
-  const [products, setProducts] = useState<DataType[]>([]);
+  const [products, setProducts] = useState<DataType2[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [sortOption, setSortOption] = useState("default");
-  const [sortedData, setSortedData] = useState<DataType[]>([]);
+  const [sortedData, setSortedData] = useState<DataType2[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   //brand
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -115,33 +114,35 @@ const Computer = () => {
   const { addToWish, removeFromWish, isInWishlist } = useWish();
 
   const handleToggleWish = (item: any) => {
-    if (isInWishlist(item.id)) {
-      removeFromWish(item.id);
+    const normalizedItem: WishItem = {
+      id: item._id || item.id,
+      name: item.name,
+      image: item.image,
+      price: item.price,
+      quantity: 1,
+      color: item.color,
+      size: item.size,
+      memory: item.memory,
+      storage: item.storage,
+      rating: item.rating || 0,
+      description: item.description || "",
+      inventoryStatus: item.inventoryStatus || "IN_STOCK",
+      category: item.category || "",
+    };
+
+    if (isInWishlist(normalizedItem.id)) {
+      removeFromWish(normalizedItem.id);
     } else {
-      addToWish({
-        id: item.id,
-        name: item.name,
-        image: item.image,
-        price: item.price,
-        quantity: 1,
-        color: item.color,
-        size: item.size,
-        memory: item.memory,
-        storage: item.storage,
-        rating: item.rating,
-        description: item.description,
-        inventoryStatus: item.inventoryStatus,
-        category: item.category,
-      });
+      addToWish(normalizedItem);
     }
   };
 
   //id detail
   const navigate = useNavigate();
-  const handleClick = (id: string) => {
-    navigate(`/computer-and-laptop/product/${id}`);
+  const handleClick = (_id: string) => {
+    navigate(`/computer-and-laptop/product/${_id}`);
   };
-  const getSeverity = (item: DataType) => {
+  const getSeverity = (item: DataType2) => {
     if (item.inventoryStatus === "") {
       return "";
     }
@@ -548,8 +549,10 @@ const Computer = () => {
                     <ButtonsWrapper className="buttons">
                       <Buttonn onClick={() => handleToggleWish(item)}>
                         <img
-                          src={isInWishlist(item.id) ? redHeart : Heart}
-                          alt=""
+                          src={
+                            isInWishlist((item as any)._id) ? redHeart : Heart
+                          }
+                          alt="wishlist"
                         />
                       </Buttonn>
                       <Buttonn>
@@ -559,7 +562,7 @@ const Computer = () => {
                           alt=""
                         />
                       </Buttonn>
-                      <Buttonn onClick={() => handleClick(item.id)}>
+                      <Buttonn onClick={() => handleClick(item._id)}>
                         <img src={Eye} alt="" />
                       </Buttonn>
                     </ButtonsWrapper>

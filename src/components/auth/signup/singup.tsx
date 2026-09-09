@@ -9,7 +9,11 @@ import { Button } from "../../homepage/main/homapage.style";
 import Google from "../../../assets/login/Google.png";
 import Apple from "../../../assets/login/Apple.svg";
 import { Checkbox } from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
 const SignupForm: React.FC = () => {
+  const navigate = useNavigate();
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,9 +46,10 @@ const SignupForm: React.FC = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      alert("Signup successful!");
+      toast.success("Signup successful!");
+      navigate("/");
     } catch (error: any) {
-      alert(error.response?.data?.message || "Signup failed.");
+      toast.error(error.response?.data?.message || "Signup failed.");
     }
   };
 
@@ -159,6 +164,7 @@ const SignupForm: React.FC = () => {
           <p>Login with Apple</p>
         </div>
       </MainWrapper>
+      <ToastContainer />
     </form>
   );
 };

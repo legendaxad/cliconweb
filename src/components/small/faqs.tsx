@@ -1,3 +1,5 @@
+import { useRef } from "react";
+import emailjs from "emailjs-com";
 import { Navigated } from "../compare/compare.style";
 import { Leftone, MainDiv, Rightone } from "./style.small";
 import home from "../../assets/shop/House.svg";
@@ -9,7 +11,36 @@ import {
 } from "@mui/material";
 import { TextInput, Textarea } from "@mantine/core";
 import { Button } from "../homepage/main/homapage.style";
+import { ToastContainer, toast } from "react-toastify";
+
 export const FAQcomponent = () => {
+  const form = useRef<HTMLFormElement>(null);
+
+  const sendEmail = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!form.current) return; // <-- ✅ This prevents passing `null`
+
+    emailjs
+      .sendForm(
+        "service_i7k3t4d",
+        "template_zia1ixb",
+        form.current, // ✅ Now TypeScript knows it's not null
+        "1-eQAcg9u0ReJFiDN"
+      )
+      .then(
+        (result) => {
+          console.log("Email sent!", result.text);
+          toast.success("Your message has been sent successfully!");
+          form.current?.reset(); // optional chaining just in case
+        },
+        (error) => {
+          console.error("Email failed to send:", error.text);
+          toast.error("Something went wrong. Please try again.");
+        }
+      );
+  };
+
   return (
     <div>
       <Navigated>
@@ -18,9 +49,11 @@ export const FAQcomponent = () => {
         <h2>{">"}</h2>
         <h2>FAQs</h2>
       </Navigated>
+
       <MainDiv>
         <Leftone>
           <h2>Frequently Asked Questions</h2>
+
           <Accordion sx={{ width: "600px" }}>
             <AccordionSummary
               expandIcon={<>+</>}
@@ -107,28 +140,48 @@ export const FAQcomponent = () => {
             </AccordionDetails>
           </Accordion>
         </Leftone>
-        <Rightone>
-          <h1>Don’t find your answer, Ask for support.</h1>
+
+        {/* Contact Form Section */}
+        <Rightone as="form" ref={form} onSubmit={sendEmail}>
+          <h1>Don’t find your answer? Ask for support.</h1>
           <h2>
             Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed
-            molestie accumsan dui, non iaculis primis in faucibu raesent eget
+            molestie accumsan dui, non iaculis primis in faucibus. Praesent eget
             sem purus.
           </h2>
+
           <TextInput
             style={{ width: "350px" }}
             type="text"
-            placeholder="Email"
+            name="user_name"
+            placeholder="Your Name"
             required
           />
           <TextInput
-            type="text"
             style={{ width: "350px" }}
-            placeholder="Subjectl"
+            type="email"
+            name="user_email"
+            placeholder="Your Email"
             required
-          />{" "}
-          <Textarea style={{ width: "350px" }} placeholder="Message" />
+          />
+
+          <TextInput
+            style={{ width: "350px" }}
+            type="text"
+            name="subject"
+            placeholder="Subject"
+            required
+          />
+
+          <Textarea
+            style={{ width: "350px" }}
+            name="message"
+            placeholder="Your Message"
+            required
+          />
+
           <Button type="submit">
-            Submit{" "}
+            Submit
             <svg
               className="arrow-icon"
               xmlns="http://www.w3.org/2000/svg"
@@ -140,21 +193,22 @@ export const FAQcomponent = () => {
               <path
                 d="M3.125 10H16.875"
                 stroke="white"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M11.25 4.375L16.875 10L11.25 15.625"
                 stroke="white"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </Button>
         </Rightone>
       </MainDiv>
+      <ToastContainer />
     </div>
   );
 };

@@ -62,6 +62,7 @@ export const TopButton = styled.div<{ isLogin: boolean }>`
 export const MainWrapper = styled.div`
   display: flex;
   gap: 16px;
+
   flex-direction: column;
   margin-top: 20px;
   h2 {

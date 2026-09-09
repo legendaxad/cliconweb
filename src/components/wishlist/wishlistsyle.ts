@@ -28,7 +28,8 @@ export const Wrappergrid = styled.div`
   width: 350px;
   &:hover {
     box-shadow: 2px 3px 4px 6px rgba(200, 200, 200, 0.5);
-    animation: ${shake} 0.5s ease;
+    animation: ${shake} 0.5s ease-in-out;
+    cursor: pointer;
   }
 
   img {
@@ -161,9 +162,7 @@ export const WrapperList = styled.div`
         color: #fff;
         font-weight: 600;
         padding: 10px 16px;
-        transition:
-          background-color 0.3s ease,
-          transform 0.2s ease;
+        transition: background-color 0.3s ease, transform 0.2s ease;
         cursor: pointer;
       }
 

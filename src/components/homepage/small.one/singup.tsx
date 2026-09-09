@@ -1,107 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-const close = (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 4.25C4.5 4.25 1.5 12 1.5 12C1.5 12 4.5 19.75 12 19.75C19.5 19.75 22.5 12 22.5 12C22.5 12 19.5 4.25 12 4.25Z"
-      stroke="#191C1F"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
-      stroke="#191C1F"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-);
-const open = (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M18.8531 11.9343L21 15.6375"
-      stroke="#191C1F"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M14.4563 13.9968L15.1219 17.775"
-      stroke="#191C1F"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M9.5344 13.9875L8.86877 17.7751"
-      stroke="#191C1F"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M5.13748 11.9343L2.9906 15.6562"
-      stroke="#191C1F"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M3 9.83435C4.575 11.7844 7.4625 14.25 12 14.25C16.5375 14.25 19.425 11.7844 21 9.83435"
-      stroke="#191C1F"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-);
-const SingupSmall = ({ onClose }: { onClose: () => void }) => {
-  const [user, setUser] = useState<{ email: string; name?: string } | null>(
-    null
-  );
+
+const SignupSmall = ({ onClose }: { onClose: () => void }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [user, setUser] = useState<{ name?: string; email: string } | null>(
+    null
+  );
+  const navigate = useNavigate();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      const res = await axios.post("http://localhost:8080/auth/signin", {
+      const response = await axios.post("http://localhost:8080/auth/signin", {
         email,
         password,
       });
 
-      if (res.data) {
-        // Save the user info
-        setUser({
-          email: res.data.email,
-          name: res.data.name, // Adjust based on what your backend returns
-        });
-
-        toast.success("Login successful!");
-      }
+      const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      toast.success("Login successful!");
+      setUser(user);
+      navigate("/");
     } catch (error: any) {
-      alert(error.response?.data?.message || "Login failed.");
+      const errorMessage =
+        error?.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMessage);
     }
   };
+
+  const fetchUser = async () => {
+    const token = localStorage.getItem("token");
+    const localUser = localStorage.getItem("user");
+
+    if (!token) return setUser(null);
+
+    try {
+      const res = await axios.get("http://localhost:8080/auth/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.data?.user) {
+        setUser(res.data.user);
+      }
+    } catch (err) {
+      console.error("Auth check failed:", err);
+      // Fallback to local user if available
+      if (localUser) {
+        setUser(JSON.parse(localUser));
+      } else {
+        setUser(null);
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    toast.success("Logged out");
+  };
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+    fetchUser();
+  }, []);
 
   return (
     <Container>
@@ -111,69 +84,55 @@ const SingupSmall = ({ onClose }: { onClose: () => void }) => {
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
+        <TopBar>
+          <h1>{user ? `Welcome, ${user.name || user.email}` : "Sign in"}</h1>
+          <h1 onClick={onClose} style={{ cursor: "pointer" }}>
+            ✕
+          </h1>
+        </TopBar>
+
         {user ? (
-          <>
-            <div>
-              <h1>Welcome, {user.name || user.email}</h1>
-              <h1 onClick={onClose}>✕</h1>
-            </div>
-            <button
-              onClick={() => {
-                setUser(null);
-                setEmail("");
-                setPassword("");
-              }}
-            >
-              Log out
-            </button>
-          </>
+          <button onClick={handleLogout}>Log out</button>
         ) : (
           <>
-            <div>
-              <h1>Sign in to your account</h1>
-              <h1 onClick={onClose}>✕</h1>
-            </div>
-            <InputWrapper>
-              <h2>Email Address</h2>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.currentTarget.value)}
-                required
-              />
-            </InputWrapper>
-            <InputWrapper>
-              <PasswordTop>
-                <h2>Password</h2>
-                <h3>Forgot Password</h3>
-              </PasswordTop>
-              <PasswordField>
+            <form onSubmit={handleLogin}>
+              <InputWrapper>
+                <h2>Email Address</h2>
                 <input
-                  value={password}
-                  onChange={(e) => setPassword(e.currentTarget.value)}
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.currentTarget.value)}
                   required
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
                 />
-                <ToggleIcon onClick={() => setShowPassword((prev) => !prev)}>
-                  {showPassword ? close : open}
-                </ToggleIcon>
-              </PasswordField>
-            </InputWrapper>
-            <button onClick={handleLogin}>
-              Sign in
-              <svg /* icon omitted for brevity */ />
-            </button>
+              </InputWrapper>
+              <InputWrapper>
+                <PasswordTop>
+                  <h2>Password</h2>
+                  <h3>Forgot Password</h3>
+                </PasswordTop>
+                <PasswordField>
+                  <input
+                    value={password}
+                    onChange={(e) => setPassword(e.currentTarget.value)}
+                    required
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                  />
+                  <ToggleIcon onClick={() => setShowPassword((prev) => !prev)}>
+                    {showPassword ? "🙈" : "👁️"}
+                  </ToggleIcon>
+                </PasswordField>
+              </InputWrapper>
+              <br />
+              <button type="submit">Sign in</button>
+            </form>
             <h4>
-              <Div></Div>Don’t have account <Div></Div>
+              <Div></Div>Don’t have an account? <Div></Div>
             </h4>
             <Singupstyle>
               <NavLink style={{ textDecoration: "none" }} to={"/login"}>
-                <button>
-                  Sign up
-                  <svg /* icon omitted for brevity */ />
-                </button>
+                <button onClick={onClose}>Sign up</button>
               </NavLink>
             </Singupstyle>
           </>
@@ -196,6 +155,11 @@ const Div = styled.div`
   width: 100px;
   height: 1px;
 `;
+const TopBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 const MAinDiv = styled(motion.div)`
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
   div {
@@ -367,4 +331,4 @@ const ToggleIcon = styled.span`
   cursor: pointer;
 `;
 
-export default SingupSmall;
+export default SignupSmall;

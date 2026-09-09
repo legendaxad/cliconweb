@@ -1,5 +1,6 @@
 export interface DataType {
   category: string;
+
   name: string;
   price: number;
   description: string;
@@ -20,7 +21,29 @@ export interface DataType {
 
   image: string;
 }
+export interface DataType2 {
+  category: string;
+  _id: string;
+  name: string;
+  price: number;
+  description: string;
+  id: string;
+  brand: string;
+  popular: string;
+  inventoryStatus:
+    | "HOT"
+    | "BEST DEALS"
+    | "25% OFF"
+    | "SALE"
+    | "INSTOCK"
+    | "LOWSTOCK"
+    | "OUTOFSTOCK"
+    | "";
 
+  rating: number;
+
+  image: string;
+}
 export interface CartItem {
   id: number;
   image: string;

@@ -1,10 +1,10 @@
 import axios from "axios";
-import { a } from "framer-motion/dist/types.d-B50aGbjN";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export interface CartItem {
   id: string;
+  productId?: string;
   name: string;
   image: string;
   price: number;
@@ -26,34 +26,35 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const USER_ID = "guest123"; // Replace with dynamic ID if user is logged in
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
+};
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  // ✅ Load cart from backend on first load
   useEffect(() => {
     const fetchCartItems = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:8080/cart/user?userId=${USER_ID}`
-        );
+      const headers = getAuthHeaders();
+      if (!headers) return; // Guest: no fetch from backend
 
-        const backendItems = res.data.map((item: any) => ({
-          id: item.productId,
+      try {
+        const res = await axios.get("http://localhost:8080/cart/user", headers);
+        const backendItems: CartItem[] = res.data.map((item: any) => ({
+          id: item.productId || item._id || item.id,
           name: item.name,
           image: item.image,
           price: item.price,
           quantity: item.quantity,
-          rating: 0,
+          rating: item.rating || 0,
         }));
-
         setCartItems(backendItems);
       } catch (error) {
-        console.error("Failed to fetch cart:", error);
-        toast.error("Could not load your cart");
+        console.error("❌ Failed to fetch cart:", error);
+        toast.error("Could not load your cart.");
       }
     };
 
@@ -63,84 +64,88 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const addToCart = async (item: CartItem) => {
     toast.success(`${item.name} added to cart!`);
 
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((i) => i.id === item.id);
+      if (existingItem) {
+        const newQty = Math.min(existingItem.quantity + item.quantity, 10);
+        if (newQty > 10) toast.error("Quantity cannot exceed 10");
+
+        return prevItems.map((i) =>
+          i.id === item.id ? { ...i, quantity: newQty } : i
+        );
+      } else {
+        return [
+          ...prevItems,
+          { ...item, quantity: Math.min(item.quantity, 10) },
+        ];
+      }
+    });
+
+    const headers = getAuthHeaders();
+    if (!headers) return; // Guest: local state only
+
     try {
-      await axios.post("http://localhost:8080/cart/add", {
-        userId: USER_ID,
-        product: {
-          _id: item.id,
-          name: item.name,
-          price: item.price,
-          image: item.image,
-          quantity: item.quantity,
+      await axios.post(
+        "http://localhost:8080/cart/add",
+        {
+          product: {
+            _id: item.id,
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            quantity: item.quantity,
+          },
         },
-      });
-    } catch (error: any) {
+        headers
+      );
+    } catch (error) {
       console.error("❌ Failed to sync cart:", error);
       toast.error("Could not sync with backend");
     }
-
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.id === item.id);
-
-      if (existingItem) {
-        const updatedQuantity = existingItem.quantity + item.quantity;
-
-        if (updatedQuantity > 10) {
-          toast.error("Quantity cannot exceed 10");
-          return prevItems.map((i) =>
-            i.id === item.id ? { ...i, quantity: 10 } : i
-          );
-        }
-
-        return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: updatedQuantity } : i
-        );
-      } else {
-        const quantityToAdd = Math.min(item.quantity, 10);
-        return [...prevItems, { ...item, quantity: quantityToAdd }];
-      }
-    });
   };
 
   const removeFromCart = async (id: string) => {
     toast.error("Item removed from cart!");
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+
+    const headers = getAuthHeaders();
+    if (!headers) return;
 
     try {
-      await axios.delete(`http://localhost:8080/cart/remove/${USER_ID}/${id}`);
+      await axios.delete(`http://localhost:8080/cart/remove/${id}`, headers);
     } catch (error) {
       console.error("❌ Failed to delete from backend:", error);
       toast.error("Could not remove item from backend");
     }
-
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
-  const isInCartlist = (id: string) => {
-    return cartItems.some((item) => item.id === id);
   };
 
   const changeQuantity = async (id: string, quantity: number) => {
-    if (quantity > 10) {
-      toast.error("Item quantity cannot exceed 10.");
+    if (quantity > 10 || quantity < 1) {
+      toast.error("Quantity must be between 1 and 10.");
       return;
     }
 
-    if (quantity < 1) {
-      toast.error("Item quantity must be at least 1.");
-      return;
-    }
+    setCartItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+    );
+
+    const headers = getAuthHeaders();
+    if (!headers) return;
 
     try {
-      await axios.put(`http://localhost:8080/cart/update/${USER_ID}/${id}`, {
-        quantity,
-      });
-
-      setCartItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+      await axios.put(
+        `http://localhost:8080/cart/update/${id}`,
+        { quantity },
+        headers
       );
     } catch (error) {
-      console.error("Failed to update quantity:", error);
-      alert("Failed to update cart. Please try again.");
+      console.error("❌ Failed to update quantity:", error);
+      toast.error("Failed to update cart.");
     }
+  };
+
+  const isInCartlist = (id: string) => {
+    return cartItems.some((item) => item.id === id);
   };
 
   return (
